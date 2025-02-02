@@ -11,7 +11,12 @@ const propertySchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['rent', 'sale'],
+        enum: ['rent', 'buy'],
+        required: true
+    },
+    propertyType: {
+        type: String,
+        enum: ['Apartment', 'House', 'Land'],
         required: true
     },
     price: {
@@ -30,9 +35,8 @@ const propertySchema = new mongoose.Schema({
     features: {
         bedrooms: Number,
         bathrooms: Number,
-        area: Number, // in sq ft
+        area: Number, 
         parking: Boolean,
-        furnished: Boolean
     },
     images: [{
         type: String
