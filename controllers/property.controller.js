@@ -27,10 +27,26 @@ export const addProperty = async (req, res) => {
 
 
 export const getProperties = async (req, res) => {
+    const query = req.query
+    // console.log(query)
     try {
-        const properties = await Property.find()
-            .populate('owner', 'username email')
-            .sort({ createdAt: -1 });
+        let propertiesQuery  =  Property.find().populate('owner', 'username email')
+        if(query.city){
+            propertiesQuery  = propertiesQuery .where('location.city').equals(query.city)
+        }
+        if(query.type){
+            propertiesQuery = propertiesQuery.where('type').equals(query.type)
+        }
+        if (query.minPrice && query.maxPrice) {
+            propertiesQuery = propertiesQuery.where('price')
+                .gte(Number(query.minPrice)) 
+                .lte(Number(query.maxPrice));
+        }
+        if (query.bedrooms) {
+            propertiesQuery = propertiesQuery.where('features.bedrooms').equals(Number(query.bedrooms));
+        }
+
+        const properties = await propertiesQuery.sort({ createdAt: -1 });
             
         res.status(200).json({
             success: true,
