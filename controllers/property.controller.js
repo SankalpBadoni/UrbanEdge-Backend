@@ -1,4 +1,5 @@
 import Property from '../models/property.model.js';
+import jwt from "jsonwebtoken"
 
 
 export const addProperty = async (req, res) => {
@@ -65,19 +66,38 @@ export const getProperties = async (req, res) => {
 export const getProperty = async (req, res) => {
     try {
         const property = await Property.findById(req.params.id)
-            .populate('owner', 'username profilePicture');
-            
+            .populate("owner", "username profilePicture");
+
         if (!property) {
             return res.status(404).json({
                 success: false,
                 message: "Property not found"
             });
         }
-        
+
+        let isSaved = false;
+        const token = req.cookies?.token; 
+
+        if (token) {
+            try {
+                
+                const payload = jwt.verify(token, process.env.JWT_SECRET);
+                const saved = await SavedPost.findOne({
+                    user: payload.id,
+                    property: req.params.id,
+                });
+                isSaved = !!saved; 
+            } catch (err) {
+                console.log("JWT Verification Error:", err.message);
+            }
+        }
+
         res.status(200).json({
             success: true,
-            property
+            property,
+            isSaved,
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,

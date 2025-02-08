@@ -1,3 +1,4 @@
+import savedPostsModel from '../models/savedPosts.model.js';
 import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 
@@ -105,6 +106,37 @@ export const deleteUser = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to delete user"
+        });
+    }
+}
+
+export const savePost = async (req, res) => {
+    try {
+        const { propertyId } = req.body;
+        const userId = req.user.id || req.user._id;
+
+        const savePost = new savedPostsModel({user: userId, property: propertyId});
+        await savePost.save();
+
+        const existingSavedPost = await savedPostsModel.findOne({ user: userId, property: propertyId });
+
+        if (existingSavedPost) {
+            await savedPostsModel.findByIdAndDelete(existingSavedPost._id);
+            return res.status(200).json({
+                success: true,
+                message: "Property removed from saved posts"
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: "Property saved successfully"
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Property not saved"
         });
     }
 }
