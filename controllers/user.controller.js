@@ -1,4 +1,4 @@
-import savedPostsModel from '../models/savedPosts.model.js';
+import SavedPost from '../models/savedPosts.model.js';
 import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 
@@ -115,18 +115,19 @@ export const savePost = async (req, res) => {
         const { propertyId } = req.body;
         const userId = req.user.id || req.user._id;
 
-        const savePost = new savedPostsModel({user: userId, property: propertyId});
-        await savePost.save();
+        const existingSavedPost = await SavedPost.findOne({ owner: userId, property: propertyId });
 
-        const existingSavedPost = await savedPostsModel.findOne({ user: userId, property: propertyId });
+if (existingSavedPost) {
+    await SavedPost.findByIdAndDelete(existingSavedPost._id);
+    return res.status(200).json({
+        success: true,
+        message: "Property removed from saved posts"
+    });
+}
 
-        if (existingSavedPost) {
-            await savedPostsModel.findByIdAndDelete(existingSavedPost._id);
-            return res.status(200).json({
-                success: true,
-                message: "Property removed from saved posts"
-            });
-        }
+const savePost = new SavedPost({ owner: userId, property: propertyId });
+await savePost.save();
+
         
         res.status(200).json({
             success: true,

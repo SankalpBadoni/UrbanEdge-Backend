@@ -13,6 +13,6 @@ const savedPostSchema = new mongoose.Schema({
     }
 }, {timestamps: true})
 
-savedPostSchema.index({ user: 1, property: 1 }, { unique: true });
+// savedPostSchema.index({ user: 1, property: 1 }, { unique: true });
 
 export default mongoose.model("SavedPost", savedPostSchema)
