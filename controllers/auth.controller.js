@@ -36,9 +36,12 @@ export const register = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
         );
-
+        console.log("Access token cookie:", req.cookies.access_token);
         res.cookie('access_token', token, {
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // false in development
+            sameSite: 'lax',
+            path: '/',
             maxAge: 24 * 60 * 60 * 1000 
         }).status(201).json({
             success: true,

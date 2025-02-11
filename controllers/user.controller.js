@@ -1,4 +1,5 @@
 import SavedPost from '../models/savedPosts.model.js';
+import Property from '../models/property.model.js';  // Adjust the path based on your project structure
 import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 
@@ -138,6 +139,38 @@ await savePost.save();
         res.status(500).json({
             success: false,
             message: "Property not saved"
+        });
+    }
+}
+
+export const profilePosts = async (req, res) => {
+    
+    try {
+
+        const userId = req.user.id || req.user._id;
+        const user = await User.findById(userId).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+        const userPosts = await Property.find({ owner: userId });
+        const savedPosts = await SavedPost.find({ _id: { $in: user.savedPosts } });
+        // console.log("user id-", userId)
+        console.log(savedPosts)
+        
+
+        res.status(200).json({
+            userPosts,
+            savedPosts
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false, 
+            message: "Failed to get profile posts"
         });
     }
 }
