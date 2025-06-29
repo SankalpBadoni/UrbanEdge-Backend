@@ -39,7 +39,7 @@ export const register = async (req, res) => {
         console.log("Access token cookie:", req.cookies.access_token);
         res.cookie('access_token', token, {
             httpOnly: true,
-            secure: true, // false in development
+            secure: false, 
             sameSite: 'none',
             path: '/',
             maxAge: 24 * 60 * 60 * 1000 
