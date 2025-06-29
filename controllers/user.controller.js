@@ -1,5 +1,5 @@
 import SavedPost from '../models/savedPosts.model.js';
-import Property from '../models/property.model.js';  // Adjust the path based on your project structure
+import Property from '../models/property.model.js';  
 import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 
